@@ -26,3 +26,27 @@ def return_over(values: list[float], window: int) -> float | None:
     if len(values) <= window or values[-window - 1] == 0:
         return None
     return values[-1] / values[-window - 1] - 1.0
+
+
+def rsi(values: list[float], window: int = 14) -> float | None:
+    """Simple RSI implementation (Wilder's method approximation)."""
+    if len(values) < window + 1:
+        return None
+    gains = []
+    losses = []
+    for i in range(1, len(values)):
+        delta = values[i] - values[i - 1]
+        if delta > 0:
+            gains.append(delta)
+            losses.append(0.0)
+        else:
+            gains.append(0.0)
+            losses.append(-delta)
+    if len(gains) < window:
+        return None
+    avg_gain = sum(gains[-window:]) / window
+    avg_loss = sum(losses[-window:]) / window
+    if avg_loss == 0:
+        return 100.0
+    rs = avg_gain / avg_loss
+    return 100.0 - (100.0 / (1.0 + rs))
